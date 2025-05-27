@@ -71,7 +71,7 @@ class TOTPGenerator {
       this.displayOTP(service, otp);
       this.startWipeTimer();
     } catch (e) {
-      this.displayError("No");
+      this.displayError("Invalid GRSA Encryption Key");
     }
   }
 
