@@ -71,7 +71,7 @@ class TOTPGenerator {
       this.displayOTP(service, otp);
       this.startWipeTimer();
     } catch (e) {
-      this.displayError("Invalid password or corrupted data");
+      this.displayError("No");
     }
   }
 
@@ -173,9 +173,9 @@ class TOTPGenerator {
   displayOTP(service, otp) {
     const display = document.getElementById("otp-display");
     display.innerHTML = `
-      <div>${service} OTP:</div>
+      <div>${service} code:&nbsp;</div>
       <div class="otp-code">${otp}</div>
-      <div>Valid for: <span id="countdown">30</span>s</div>
+      <div>Valid for: <span id="countdown">30</span></div>
     `;
 
     // Start countdown
@@ -183,7 +183,10 @@ class TOTPGenerator {
     const timer = setInterval(() => {
       remaining--;
       document.getElementById("countdown").textContent = remaining;
-      if (remaining <= 0) clearInterval(timer);
+      if (remaining <= 0) {
+        clearInterval(timer);
+        this.generateOTP();
+      }
     }, 1000);
   }
 
