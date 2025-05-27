@@ -21,6 +21,13 @@ class TOTPGenerator {
   initUI() {
     this.populateServices();
 
+    const passInput = document.getElementById("password-input");
+    passInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        this.generateOTP();
+      }
+    });
+
     document
       .getElementById("generate-btn")
       .addEventListener("click", () => this.generateOTP());
