@@ -1,0 +1,47 @@
+body {
+  background-color: #111;
+  color: #0f0;
+  font-family: 'Courier New', monospace;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.container {
+  border: 1px solid #0f0;
+  padding: 2rem;
+  border-radius: 0;
+}
+
+#otp-display {
+  font-size: 2rem;
+  margin: 1rem 0;
+  min-height: 3rem;
+  letter-spacing: 0.3rem;
+  color: #0f0;
+  font-weight: bold;
+}
+
+.nuke {
+  background: #300;
+  color: #f00;
+  border-color: #f00;
+}
+
+/* Terminal flicker effect for nostalgia */
+body::after {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  background: rgba(0, 255, 0, 0.02);
+  animation: flicker 0.01s infinite alternate;
+}
+
+@keyframes flicker {
+  from { opacity: 0.1; }
+  to { opacity: 0.2; }
+}

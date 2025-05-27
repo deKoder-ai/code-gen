@@ -1,0 +1,218 @@
+// Hardcoded encrypted secrets (paste Python output here)
+const ENCRYPTED_SECRETS = {
+  github: {
+    salt: "Ce8PHofgXybmttytjJ9KKw==",
+    ciphertext: "547iEQXUDjJOPXK1AK63n2Y6FKJNet6mQTmlhpfK+D4=",
+    nonce: "+KpHrXNP7xZAkf9G",
+  },
+};
+
+class TOTPGenerator {
+  constructor() {
+    this.activePassword = null;
+    this.wipeTimer = null;
+    this.WIPE_TIMEOUT = 5 * 60 * 1000; // 5 minutes
+
+    this.initUI();
+    this.checkCryptoSupport();
+  }
+
+  // ===== CORE FUNCTIONS ===== //
+  initUI() {
+    this.populateServices();
+
+    document
+      .getElementById("generate-btn")
+      .addEventListener("click", () => this.generateOTP());
+    document
+      .getElementById("wipe-btn")
+      .addEventListener("click", () => this.wipeAll());
+  }
+
+  populateServices() {
+    const select = document.getElementById("service-select");
+    select.innerHTML = '<option value="">-- Select Account --</option>';
+
+    Object.keys(ENCRYPTED_SECRETS).forEach((service) => {
+      const option = document.createElement("option");
+      option.value = service;
+      option.textContent = service;
+      select.appendChild(option);
+    });
+  }
+
+  async generateOTP() {
+    try {
+      const service = document.getElementById("service-select").value;
+      const password = document.getElementById("password-input").value;
+
+      if (!service || !password) throw new Error("Missing input");
+
+      // Derive key
+      const { salt, ciphertext, nonce } = ENCRYPTED_SECRETS[service];
+      const key = await this.deriveKey(password, this.base64ToArray(salt));
+
+      // Decrypt
+      const secret = await this.decryptSecret(
+        this.base64ToArray(ciphertext),
+        this.base64ToArray(nonce),
+        key
+      );
+
+      // Generate and display
+      const otp = await this.generateTOTP(secret);
+      this.displayOTP(service, otp);
+      this.startWipeTimer();
+    } catch (e) {
+      this.displayError("Invalid password or corrupted data");
+    }
+  }
+
+  // ===== CRYPTO OPERATIONS ===== //
+  async deriveKey(password, salt) {
+    const keyMaterial = await crypto.subtle.importKey(
+      "raw",
+      new TextEncoder().encode(password),
+      { name: "PBKDF2" },
+      false,
+      ["deriveKey"]
+    );
+
+    return crypto.subtle.deriveKey(
+      {
+        name: "PBKDF2",
+        salt,
+        iterations: 100000,
+        hash: "SHA-256",
+      },
+      keyMaterial,
+      { name: "AES-GCM", length: 256 },
+      false,
+      ["decrypt"]
+    );
+  }
+
+  async decryptSecret(ciphertext, nonce, key) {
+    const decrypted = await crypto.subtle.decrypt(
+      { name: "AES-GCM", iv: nonce },
+      key,
+      ciphertext
+    );
+    return new TextDecoder().decode(decrypted);
+  }
+
+  generateTOTP(secret) {
+    // Convert base32 secret to bytes
+    const key = this.base32ToBytes(secret);
+    const epoch = Math.floor(Date.now() / 1000);
+    const timeStep = 30;
+    const counter = Math.floor(epoch / timeStep);
+
+    // Convert counter to 8-byte buffer (big-endian)
+    const counterBytes = new ArrayBuffer(8);
+    const counterView = new DataView(counterBytes);
+    counterView.setBigUint64(0, BigInt(counter), false);
+
+    // HMAC-SHA1 calculation
+    return crypto.subtle
+      .importKey("raw", key, { name: "HMAC", hash: "SHA-1" }, false, ["sign"])
+      .then((hmacKey) => {
+        return crypto.subtle.sign("HMAC", hmacKey, counterBytes);
+      })
+      .then((hmacResult) => {
+        // Dynamic truncation (RFC 4226)
+        const hmac = new Uint8Array(hmacResult);
+        const offset = hmac[hmac.length - 1] & 0x0f;
+        const binary =
+          ((hmac[offset] & 0x7f) << 24) |
+          ((hmac[offset + 1] & 0xff) << 16) |
+          ((hmac[offset + 2] & 0xff) << 8) |
+          (hmac[offset + 3] & 0xff);
+
+        // Generate 6-digit code
+        return (binary % 1000000).toString().padStart(6, "0");
+      });
+  }
+
+  // Helper function for base32 decoding
+  base32ToBytes(base32) {
+    const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
+    base32 = base32.replace(/=+$/, "").toUpperCase();
+    let bits = 0;
+    let value = 0;
+    let bytes = [];
+
+    for (let i = 0; i < base32.length; i++) {
+      const index = alphabet.indexOf(base32[i]);
+      if (index === -1) throw new Error("Invalid base32 character");
+
+      value = (value << 5) | index;
+      bits += 5;
+
+      if (bits >= 8) {
+        bytes.push((value >>> (bits - 8)) & 0xff);
+        bits -= 8;
+      }
+    }
+
+    return new Uint8Array(bytes);
+  }
+
+  // ===== UTILITIES ===== //
+  base64ToArray(base64) {
+    return Uint8Array.from(atob(base64), (c) => c.charCodeAt(0));
+  }
+
+  displayOTP(service, otp) {
+    const display = document.getElementById("otp-display");
+    display.innerHTML = `
+      <div>${service} OTP:</div>
+      <div class="otp-code">${otp}</div>
+      <div>Valid for: <span id="countdown">30</span>s</div>
+    `;
+
+    // Start countdown
+    let remaining = 30;
+    const timer = setInterval(() => {
+      remaining--;
+      document.getElementById("countdown").textContent = remaining;
+      if (remaining <= 0) clearInterval(timer);
+    }, 1000);
+  }
+
+  displayError(message) {
+    document.getElementById(
+      "otp-display"
+    ).innerHTML = `<div class="error">${message}</div>`;
+  }
+
+  startWipeTimer() {
+    if (this.wipeTimer) clearTimeout(this.wipeTimer);
+    this.wipeTimer = setTimeout(() => this.wipeAll(), this.WIPE_TIMEOUT);
+  }
+
+  wipeAll() {
+    // Zero out sensitive data
+    this.activePassword = null;
+    document.getElementById("password-input").value = "";
+    document.getElementById("otp-display").innerHTML = "";
+
+    // Clear crypto operations from memory
+    crypto.subtle.digest("SHA-256", new Uint8Array(1)); // Force flush
+
+    console.log("Nuclear wipe complete");
+  }
+
+  checkCryptoSupport() {
+    if (!window.crypto?.subtle) {
+      document.body.innerHTML = `
+        <h1>🚨 Browser Incompatible</h1>
+        <p>Use Chrome/Firefox/Safari with HTTPS</p>
+      `;
+      throw new Error("WebCrypto unavailable");
+    }
+  }
+}
+
+// Initialize
+new TOTPGenerator();

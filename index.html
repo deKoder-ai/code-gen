@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>🔒 TOTP Vault</title>
+  <link rel="stylesheet" href="style.css">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'">
+</head>
+<body>
+  <div class="container">
+    <h1>🔐 TOTP Generator</h1>
+    <select id="service-select">
+      <option value="">-- Select Account --</option>
+    </select>
+    <input type="password" id="password-input" placeholder="Decryption Password">
+    <button id="generate-btn">Generate OTP</button>
+    <button id="wipe-btn" class="nuke">☠️ Nuke It</button>
+    <div id="otp-display"></div>
+  </div>
+  <script src="totp.js" type="module"></script>
+</body>
+</html>
