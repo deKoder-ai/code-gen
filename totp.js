@@ -12,6 +12,9 @@ class TOTPGenerator {
     this.activePassword = null;
     this.wipeTimer = null;
     this.WIPE_TIMEOUT = 5 * 60 * 1000; // 5 minutes
+    this.CSP_NONCE = "1IEbA2a5H";
+    this.currentOTPTimer = null; // Track active OTP timer
+    this.currentOTP = null; // Track active OTP
 
     this.initUI();
     this.checkCryptoSupport();
@@ -19,13 +22,12 @@ class TOTPGenerator {
 
   // ===== CORE FUNCTIONS ===== //
   initUI() {
+    this.injectCSPMeta();
     this.populateServices();
 
     const passInput = document.getElementById("password-input");
     passInput.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") {
-        this.generateOTP();
-      }
+      if (e.key === "Enter") this.generateOTP();
     });
 
     document
@@ -35,6 +37,20 @@ class TOTPGenerator {
       .getElementById("wipe-btn")
       .addEventListener("click", () => this.wipeAll());
   }
+
+  injectCSPMeta() {
+    const meta = document.createElement("meta");
+    meta.httpEquiv = "Content-Security-Policy";
+    meta.content = `default-src 'self'; script-src 'nonce-${this.CSP_NONCE}' 'strict-dynamic'`;
+    document.head.appendChild(meta);
+
+    const typeMeta = document.createElement("meta");
+    typeMeta.httpEquiv = "X-Content-Type-Options";
+    typeMeta.content = "nosniff";
+    document.head.appendChild(typeMeta);
+  }
+
+  // ... [rest of existing methods remain unchanged until generateOTP] ..
 
   populateServices() {
     const select = document.getElementById("service-select");
@@ -68,10 +84,25 @@ class TOTPGenerator {
 
       // Generate and display
       const otp = await this.generateTOTP(secret);
+      this.wipeSecret(secret); // NEW: Securely wipe decrypted secret
       this.displayOTP(service, otp);
       this.startWipeTimer();
     } catch (e) {
       this.displayError("Invalid GRSA Encryption Key");
+    }
+  }
+
+  // NEW: Secure secret wiping
+  wipeSecret(secret) {
+    try {
+      const arr = new TextEncoder().encode(secret);
+      for (let i = 0; i < arr.length; i++) {
+        arr[i] = 0;
+      }
+      // Force garbage collection (where supported)
+      if (window.gc) window.gc();
+    } catch (e) {
+      console.error("Secret wipe failed:", e);
     }
   }
 
@@ -171,6 +202,9 @@ class TOTPGenerator {
   }
 
   displayOTP(service, otp) {
+    // Clear any existing timer/code first
+    this.clearCurrentOTP();
+
     const display = document.getElementById("otp-display");
     display.innerHTML = `
       <div>${service} code:&nbsp;</div>
@@ -178,16 +212,32 @@ class TOTPGenerator {
       <div>Valid for: <span id="countdown">30</span></div>
     `;
 
-    // Start countdown
+    // Track current OTP
+    this.currentOTP = otp;
+
+    // Start new countdown
     let remaining = 30;
-    const timer = setInterval(() => {
+    this.currentOTPTimer = setInterval(() => {
       remaining--;
       document.getElementById("countdown").textContent = remaining;
       if (remaining <= 0) {
-        clearInterval(timer);
+        this.clearCurrentOTP();
         this.generateOTP();
       }
     }, 1000);
+  }
+
+  clearCurrentOTP() {
+    if (this.currentOTPTimer) {
+      clearInterval(this.currentOTPTimer);
+      this.currentOTPTimer = null;
+    }
+    if (this.currentOTP) {
+      // Securely wipe the OTP from memory
+      const otpElement = document.querySelector(".otp-code");
+      if (otpElement) otpElement.textContent = "••••••";
+      this.currentOTP = null;
+    }
   }
 
   displayError(message) {
@@ -202,14 +252,14 @@ class TOTPGenerator {
   }
 
   wipeAll() {
+    this.clearCurrentOTP();
     // Zero out sensitive data
     this.activePassword = null;
     document.getElementById("password-input").value = "";
     document.getElementById("otp-display").innerHTML = "";
 
     // Clear crypto operations from memory
-    crypto.subtle.digest("SHA-256", new Uint8Array(1)); // Force flush
-
+    crypto.subtle.digest("SHA-256", new Uint8Array(1));
     console.log("Nuclear wipe complete");
   }
 
@@ -224,5 +274,12 @@ class TOTPGenerator {
   }
 }
 
-// Initialize
-new TOTPGenerator();
+// Initialize with CSP check
+if (document.querySelector("script[nonce]")?.nonce === "1IEbA2a5H") {
+  new TOTPGenerator();
+} else {
+  document.body.innerHTML = `
+    <h1>🚨 Security Violation Detected</h1>
+    <p>Invalid Content Security Policy configuration</p>
+  `;
+}

@@ -26,6 +26,10 @@ body {
   letter-spacing: 5px;
   background-color: rgb(9, 12, 10);
   text-align: center;
+  background-image: url(./panel.png);
+  background-size: 100%;
+  background-position: center center;
+  
 }
 .container input,
 .container select,
