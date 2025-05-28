@@ -207,9 +207,11 @@ class TOTPGenerator {
 
     const display = document.getElementById("otp-display");
     display.innerHTML = `
+    <div class="result">
       <div>${service} code:&nbsp;</div>
       <div class="otp-code">${otp}</div>
       <div>Valid for: <span id="countdown">30</span></div>
+    </div>
     `;
 
     // Track current OTP

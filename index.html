@@ -11,16 +11,16 @@
 <body>
   <div class="page">
     <div class="container">
-      <h1>☢️GENERATE CODE☢️</h1>
+      <div class="title-container">
+        <h1>☢️GENERATE CODE☢️</h1>
+      </div>
       <select id="service-select">
         <option value="">-- Select Account --</option>
       </select>
       <input type="password" id="password-input" placeholder="Decryption Password">
       <button id="generate-btn">Generate</button>
       <button id="wipe-btn" class="nuke">☠️ Nuke It ☠️</button>
-      <div class="result">
-        <div id="otp-display"></div>
-      </div>
+      <div id="otp-display"></div>
     </div>
   </div>
   <script src="totp.js" type="module"></script>
