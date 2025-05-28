@@ -108,3 +108,10 @@ body {
   from { opacity: 0.1; }
   to { opacity: 0.2; }
 } */
+
+@media only screen and (max-width: 600px) {
+  .page {
+    align-items: start;
+    margin: 10px;
+  }
+}
