@@ -8,6 +8,7 @@ body {
   font-family: 'ARCADECLASSIC';
   margin: 0;
   padding: 0;
+  overflow: hidden;
 }
 
 .page {
@@ -112,6 +113,12 @@ body {
 @media only screen and (max-width: 600px) {
   .page {
     align-items: start;
-    margin: 10px;
+  }
+  .container {
+    background-size: 100% 100%;
+    background-position: center -160px;
+    background-repeat: none;
+    height: 100vh;
+    overflow: hidden;
   }
 }
