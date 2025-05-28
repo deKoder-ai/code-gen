@@ -54,7 +54,8 @@ class TOTPGenerator {
 
   populateServices() {
     const select = document.getElementById("service-select");
-    select.innerHTML = '<option value="">-- Select Account --</option>';
+    select.innerHTML =
+      '<option value="">--&nbsp;&nbsp;Select Account&nbsp;--</option>';
 
     Object.keys(ENCRYPTED_SECRETS).forEach((service) => {
       const option = document.createElement("option");

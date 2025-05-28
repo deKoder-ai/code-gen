@@ -63,6 +63,7 @@ body {
   width: 100%;
   padding: 10px;
   margin-bottom: 2px;
+  text-align: center;
 }
 .container input::placeholder {
   color: #00c42a;
