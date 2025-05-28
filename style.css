@@ -1,11 +1,17 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+  font-family: 'ARCADECLASSIC';
+}
 @font-face {
   font-family: 'ARCADECLASSIC';
   src: url('./ARCADECLASSIC.TTF');
 }
+button:hover {
+  cursor: pointer;
+}
 body {
   background-color: #0c0c0c;
-  color: #07da46;
-  font-family: 'ARCADECLASSIC';
+  color: #00c42a;
   margin: 0;
   padding: 0;
   overflow: hidden;
@@ -18,107 +24,101 @@ body {
   justify-content: center;
   align-items: center;
   background-color: rgb(16, 22, 19);
-  margin: 0px 20px;
+  /* margin: 0px 20px; */
 }
 .container {
-  border: 1px solid #07da46;
-  padding: 2rem;
-  border-radius: 0;
+  border-radius: 40px;
+  position: relative;
+  border: 3px solid #000000;
+  padding: 57px 71px;
   font-size: 25px;
   letter-spacing: 5px;
   background-color: rgb(9, 12, 10);
   text-align: center;
-  background-image: url(./panel.png);
-  background-size: 100% 155%;
-  background-position: center -160px;
+  height: 750px;
+  width: 570px;
+  background-image: url(./panel-3.png);
+  background-size: contain;
+  background-position: top center;
+  /* background-position: -40px -160px; */
   background-repeat: none;
-  min-height: 600px;
-  
 }
 .title-container {
   background-color: rgba(0, 0, 0, 0.55);
-  border: 2px solid #07da4662;
-  margin-bottom: 20px;
+  border: 2px solid #00c42aa9;
+  margin: 0px 0px 20px 0px;
+  border-radius: 30px;
+  font-size: 20px;
+  line-height: 0.7;
+  padding: 17px 0px;
 }
 .container input,
 .container select,
 .container button {
-  padding: 15px;
-  border-radius: 4px;
+  border-radius: 15px;
   font-size: 25px;
   background-color: rgba(0, 0, 0, 0.55);
-  color: #07da46;
-  font-family: 'ARCADECLASSIC';
-  margin: 2px;
-  border: 1px dashed #07da4662;
+  color: #00c42a;
+  border: 1px solid #00c42aa9;
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 2px;
 }
 .container input::placeholder {
-  color: #07da46;
+  color: #00c42a;
 }
 .container input:focus,
 .container select:focus,
 .container button:focus {
-  outline: 1px solid #07da46;
+  outline: 3px solid #00c42a;
+}
+.container button:hover {
+  background-color: #00c42a;
+  color: black;
 }
 #otp-display {
+  border-radius: 40px;
   font-size: 3rem;
   margin-top: 20px;
-  min-height: 3rem;
+  /* min-height: 3rem; */
   letter-spacing: 0.3rem;
-  color: #07da46;
-  font-weight: bold;
+  color: #00c42a;
 }
 .result {
+  border-radius: 30px;
   padding: 20px;
-  line-height: 1.3;
-  background-color: rgba(0, 0, 0, 0.55);
-  border: 2px solid #07da4662;
+  line-height: 1.2;
+  background-color: rgba(0, 0, 0, 0.932);
+  border: 2px solid #00c42aa9;
 }
 .otp-code {
   color: rgb(0, 19, 187);
 }
 
-.nuke {
-  background: #300;
-  color: #f00;
-  border-color: #f00;
-
-}
 #wipe-btn {
   color: #ff002b;
-  border: 1px dashed #ff002ba9;
-  border-radius: 7px;
+  border: 1px solid #ff002ba9;
+  border-radius: 15px;
 }
 #wipe-btn:focus {
-  outline: 1px solid #ff002b;
+  outline: 3px solid #ff002b;
 }
-/* Terminal flicker effect for nostalgia */
-/* body::after {
-  content: "";
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  background: rgba(0, 255, 0, 0.02);
-  animation: flicker 0.01s infinite alternate;
+#wipe-btn:hover {
+  background-color: #ff002b;
+  color: black;
 }
 
-@keyframes flicker {
-  from { opacity: 0.1; }
-  to { opacity: 0.2; }
-} */
 
-@media only screen and (max-width: 1001px) {
+@media only screen and (max-width: 650px) {
   .page {
     align-items: start;
   }
   .container {
-    background-size: 100% 100%;
-    background-position: center -160px;
-    background-repeat: none;
+    width: 1100vw;
     height: 100vh;
+    background-size: 100% 100%;
+    background-position: 0;
+    background-repeat: none;
     overflow: hidden;
   }
 }
