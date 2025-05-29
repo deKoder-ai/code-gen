@@ -6,9 +6,9 @@ const ENCRYPTED_SECRETS = {
     nonce: "+KpHrXNP7xZAkf9G",
   },
   "bybit-ffkr": {
-    salt: "3vXF4GYDCDmEYrBWq7m01w==",
-    ciphertext: "n/USrV0OiZJB8ORAeX4BnV4S9696GpGkx2RMVQLddM8=",
-    nonce: "zI2m2by0TMH+mxFG",
+    salt: "AGct8ED3Gy/kysEq7Eqnbw==",
+    ciphertext: "aOTc43oSdHTOGbLcVR+Fciy8HfPt58NxEcbL+5HYLP8=",
+    nonce: "pt8SyrOsU3iXKZ4e",
   },
   "proton-m": {
     salt: "RbF2zbxqXU367GcZeoM3Kg==",
@@ -100,7 +100,9 @@ class TOTPGenerator {
       this.displayOTP(service, otp);
       this.startWipeTimer();
     } catch (e) {
-      this.displayError("Invalid GRSA Encryption Key");
+      document
+        .getElementById("otp-display")
+        .innerHTML("Invalid GRSA Encryption Key");
     }
   }
 
@@ -220,7 +222,7 @@ class TOTPGenerator {
     const display = document.getElementById("otp-display");
     display.innerHTML = `
     <div class="result">
-      <div>${service} code:&nbsp;</div>
+      <div>${service}:&nbsp;</div>
       <div class="otp-code">${otp}</div>
       <div>Valid for: <span id="countdown">30</span></div>
     </div>
@@ -279,7 +281,7 @@ class TOTPGenerator {
 
   checkCryptoSupport() {
     if (!window.crypto?.subtle) {
-      document.body.innerHTML = `
+      document.getElementById("otp-display").innerHTML = `
         <h1>🚨 Browser Incompatible</h1>
         <p>Use Chrome/Firefox/Safari with HTTPS</p>
       `;
@@ -292,7 +294,7 @@ class TOTPGenerator {
 if (document.querySelector("script[nonce]")?.nonce === "1IEbA2a5H") {
   new TOTPGenerator();
 } else {
-  document.body.innerHTML = `
+  document.getElementById("otp-display").innerHTML = `
     <h1>🚨 Security Violation Detected</h1>
     <p>Invalid Content Security Policy configuration</p>
   `;
