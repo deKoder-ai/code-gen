@@ -16,6 +16,11 @@ const ENCRYPTED_SECRETS = {
       "9EqgF3nTLQFb3Fe9wazNzmBGVh8AoapRYcxuRCCNusg8UIDvN98hnawlO3uUvQTA",
     nonce: "A6AWf/AeGAGdFpCH",
   },
+  icedrive: {
+    salt: "LTRt0kgO03FgurFn0rNnxQ==",
+    ciphertext: "0UjBu/CEoEk8xpypYZjne53eG5AgB9yt21sxiem9Ag0=",
+    nonce: "QMKN43/st0ilJcxT",
+  },
 };
 
 class TOTPGenerator {
