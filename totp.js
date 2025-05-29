@@ -5,6 +5,11 @@ const ENCRYPTED_SECRETS = {
     ciphertext: "547iEQXUDjJOPXK1AK63n2Y6FKJNet6mQTmlhpfK+D4=",
     nonce: "+KpHrXNP7xZAkf9G",
   },
+  "bybit-ffkr": {
+    salt: "3vXF4GYDCDmEYrBWq7m01w==",
+    ciphertext: "n/USrV0OiZJB8ORAeX4BnV4S9696GpGkx2RMVQLddM8=",
+    nonce: "zI2m2by0TMH+mxFG",
+  },
 };
 
 class TOTPGenerator {
