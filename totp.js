@@ -10,6 +10,12 @@ const ENCRYPTED_SECRETS = {
     ciphertext: "n/USrV0OiZJB8ORAeX4BnV4S9696GpGkx2RMVQLddM8=",
     nonce: "zI2m2by0TMH+mxFG",
   },
+  "proton-m": {
+    salt: "RbF2zbxqXU367GcZeoM3Kg==",
+    ciphertext:
+      "9EqgF3nTLQFb3Fe9wazNzmBGVh8AoapRYcxuRCCNusg8UIDvN98hnawlO3uUvQTA",
+    nonce: "A6AWf/AeGAGdFpCH",
+  },
 };
 
 class TOTPGenerator {
