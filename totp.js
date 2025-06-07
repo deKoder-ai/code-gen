@@ -23,6 +23,29 @@ const ENCRYPTED_SECRETS = {
   },
 };
 
+const copyNumericValue = (button) => {
+  // Get the button's text content
+  const buttonText = button.textContent;
+
+  // Strip all non-numerical characters (keeping digits and decimal point)
+  const numericValue = buttonText.replace(/[^\d.]/g, "");
+
+  // Copy to clipboard
+  navigator.clipboard
+    .writeText(numericValue)
+    .then(() => {
+      console.log("Copied to clipboard:", numericValue);
+      // Optional: Show a feedback message
+      button.textContent = "Copied!";
+      setTimeout(() => {
+        button.textContent = buttonText;
+      }, 1000);
+    })
+    .catch((err) => {
+      console.error("Failed to copy:", err);
+    });
+};
+
 class TOTPGenerator {
   constructor() {
     this.activePassword = null;
@@ -228,10 +251,15 @@ class TOTPGenerator {
     display.innerHTML = `
     <div class="result">
       <div>${service}:&nbsp;</div>
-      <div class="otp-code">${otp}</div>
+      <div class="otp-code" id="otp-code">${otp}</div>
       <div>Valid for: <span id="countdown">30</span></div>
     </div>
     `;
+    const otpDisplay = document.getElementById("otp-display");
+    otpDisplay.addEventListener("click"),
+      () => {
+        copyNumericValue(otpDisplay);
+      };
 
     // Track current OTP
     this.currentOTP = otp;
