@@ -5,6 +5,11 @@ const ENCRYPTED_SECRETS = {
     ciphertext: "547iEQXUDjJOPXK1AK63n2Y6FKJNet6mQTmlhpfK+D4=",
     nonce: "+KpHrXNP7xZAkf9G",
   },
+  "dk-git": {
+    salt: "8a+7uO7sMxYI6ivwPQ65/w==",
+    ciphertext: "pHtuoiDcXe8Yh5bSSyENS9aQi6GsaLUPqGUpGxRg96Q=",
+    nonce: "znuVPUI39a8hqbW1",
+  },
   "bybit-ffkr": {
     salt: "AGct8ED3Gy/kysEq7Eqnbw==",
     ciphertext: "aOTc43oSdHTOGbLcVR+Fciy8HfPt58NxEcbL+5HYLP8=",
