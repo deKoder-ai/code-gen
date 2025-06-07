@@ -80,7 +80,7 @@ class TOTPGenerator {
   injectCSPMeta() {
     const meta = document.createElement("meta");
     meta.httpEquiv = "Content-Security-Policy";
-    meta.content = `default-src 'self'; script-src 'nonce-${this.CSP_NONCE}' 'strict-dynamic'`;
+    meta.content = `default-src 'self'; script-src 'nonce-${this.CSP_NONCE}' 'self' 'unsafe-eval'; style-src 'self' 'unsafe-inline';`;
     document.head.appendChild(meta);
 
     const typeMeta = document.createElement("meta");
@@ -128,9 +128,8 @@ class TOTPGenerator {
       this.displayOTP(service, otp);
       this.startWipeTimer();
     } catch (e) {
-      document
-        .getElementById("otp-display")
-        .innerHTML("Invalid GRSA Encryption Key");
+      document.getElementById("otp-display").innerHTML =
+        "Invalid GRSA Encryption Key";
     }
   }
 
@@ -256,10 +255,9 @@ class TOTPGenerator {
     </div>
     `;
     const otpDisplay = document.getElementById("otp-display");
-    otpDisplay.addEventListener("click"),
-      () => {
-        copyNumericValue(otpDisplay);
-      };
+    otpDisplay.addEventListener("click", () => {
+      copyNumericValue(otpDisplay);
+    });
 
     // Track current OTP
     this.currentOTP = otp;
@@ -324,11 +322,13 @@ class TOTPGenerator {
 }
 
 // Initialize with CSP check
-if (document.querySelector("script[nonce]")?.nonce === "1IEbA2a5H") {
-  new TOTPGenerator();
-} else {
-  document.getElementById("otp-display").innerHTML = `
-    <h1>🚨 Security Violation Detected</h1>
-    <p>Invalid Content Security Policy configuration</p>
-  `;
-}
+document.addEventListener("DOMContentLoaded", () => {
+  if (document.querySelector("script[nonce]")?.nonce === "1IEbA2a5H") {
+    new TOTPGenerator();
+  } else {
+    document.getElementById("otp-display").innerHTML = `
+          <h1>🚨 Security Violation Detected</h1>
+          <p>Invalid Content Security Policy configuration</p>
+      `;
+  }
+});
