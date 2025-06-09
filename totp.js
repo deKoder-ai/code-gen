@@ -1,3 +1,4 @@
+// totp.js
 // Hardcoded encrypted secrets (paste Python output here)
 const ENCRYPTED_SECRETS = {
   github: {
@@ -59,7 +60,6 @@ class TOTPGenerator {
     this.CSP_NONCE = "1IEbA2a5H";
     this.currentOTPTimer = null; // Track active OTP timer
     this.currentOTP = null; // Track active OTP
-    this.service = null;
 
     this.initUI();
     this.checkCryptoSupport();
@@ -67,7 +67,7 @@ class TOTPGenerator {
 
   // ===== CORE FUNCTIONS ===== //
   initUI() {
-    // this.injectCSPMeta();
+    this.injectCSPMeta();
     this.populateServices();
 
     const passInput = document.getElementById("password-input");
@@ -134,6 +134,7 @@ class TOTPGenerator {
   async generateOTP() {
     try {
       const service = this.service;
+      console.log("Selected service:", service); // 👈 Add this
       const password = document.getElementById("password-input").value;
 
       if (!service || !password) throw new Error("Missing input");
@@ -373,4 +374,3 @@ document.addEventListener("DOMContentLoaded", () => {
     ).innerText = `Invalid Content Security Policy config`;
   }
 });
-
