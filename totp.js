@@ -1,9 +1,15 @@
+// totp.js
 // Hardcoded encrypted secrets (paste Python output here)
 const ENCRYPTED_SECRETS = {
   github: {
     salt: "Ce8PHofgXybmttytjJ9KKw==",
     ciphertext: "547iEQXUDjJOPXK1AK63n2Y6FKJNet6mQTmlhpfK+D4=",
     nonce: "+KpHrXNP7xZAkf9G",
+  },
+  "dk-git": {
+    salt: "8a+7uO7sMxYI6ivwPQ65/w==",
+    ciphertext: "pHtuoiDcXe8Yh5bSSyENS9aQi6GsaLUPqGUpGxRg96Q=",
+    nonce: "znuVPUI39a8hqbW1",
   },
   "bybit-ffkr": {
     salt: "AGct8ED3Gy/kysEq7Eqnbw==",
@@ -54,7 +60,6 @@ class TOTPGenerator {
     this.CSP_NONCE = "1IEbA2a5H";
     this.currentOTPTimer = null; // Track active OTP timer
     this.currentOTP = null; // Track active OTP
-    this.service = null;
 
     this.initUI();
     this.checkCryptoSupport();
@@ -62,7 +67,7 @@ class TOTPGenerator {
 
   // ===== CORE FUNCTIONS ===== //
   initUI() {
-    // this.injectCSPMeta();
+    this.injectCSPMeta();
     this.populateServices();
 
     const passInput = document.getElementById("password-input");
@@ -129,6 +134,7 @@ class TOTPGenerator {
   async generateOTP() {
     try {
       const service = this.service;
+      console.log("Selected service:", service); // 👈 Add this
       const password = document.getElementById("password-input").value;
 
       if (!service || !password) throw new Error("Missing input");
