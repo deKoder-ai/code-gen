@@ -23,12 +23,12 @@ const ENCRYPTED_SECRETS = {
   },
 };
 
-const copyNumericValue = (button) => {
+const copyNumericValue = (element) => {
   // Get the button's text content
-  const buttonText = button.textContent;
+  const elementText = element.textContent;
 
   // Strip all non-numerical characters (keeping digits and decimal point)
-  const numericValue = buttonText.replace(/[^\d.]/g, "");
+  const numericValue = elementText.replace(/[^\d.]/g, "");
 
   // Copy to clipboard
   navigator.clipboard
@@ -36,9 +36,9 @@ const copyNumericValue = (button) => {
     .then(() => {
       console.log("Copied to clipboard:", numericValue);
       // Optional: Show a feedback message
-      button.textContent = "Copied!";
+      element.textContent = "Copied!";
       setTimeout(() => {
-        button.textContent = buttonText;
+        element.textContent = elementText;
       }, 1000);
     })
     .catch((err) => {
@@ -54,6 +54,7 @@ class TOTPGenerator {
     this.CSP_NONCE = "1IEbA2a5H";
     this.currentOTPTimer = null; // Track active OTP timer
     this.currentOTP = null; // Track active OTP
+    this.service = null;
 
     this.initUI();
     this.checkCryptoSupport();
@@ -61,7 +62,7 @@ class TOTPGenerator {
 
   // ===== CORE FUNCTIONS ===== //
   initUI() {
-    this.injectCSPMeta();
+    // this.injectCSPMeta();
     this.populateServices();
 
     const passInput = document.getElementById("password-input");
@@ -89,24 +90,45 @@ class TOTPGenerator {
     document.head.appendChild(typeMeta);
   }
 
-  // ... [rest of existing methods remain unchanged until generateOTP] ..
-
   populateServices() {
-    const select = document.getElementById("service-select");
-    select.innerHTML =
-      '<option value="">--&nbsp;&nbsp;Select Account&nbsp;--</option>';
+    const serviceSelect = document.getElementById("select-service");
+    const serviceOptionsDiv = document.getElementById("service-options-div");
+    const mask = document.getElementById("mask");
+    mask.addEventListener("click", () => {
+      serviceOptionsDiv.style.display = "none";
+      mask.style.display = "none";
+    });
+
+    serviceSelect.addEventListener("click", () => {
+      serviceOptionsDiv.style.display = "block";
+      mask.style.display = "block";
+    });
 
     Object.keys(ENCRYPTED_SECRETS).forEach((service) => {
-      const option = document.createElement("option");
-      option.value = service;
-      option.textContent = service;
-      select.appendChild(option);
+      const serviceOption = document.createElement("button");
+      serviceOption.textContent = service;
+      serviceOption.addEventListener("click", (e) => {
+        this.service = e.target.textContent;
+        serviceSelect.innerText = this.service;
+        serviceOptionsDiv.style.display = "none";
+        mask.style.display = "none";
+        document.getElementById("password-input").focus();
+      });
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") {
+          serviceSelect.innerText = "--SELECT SERVICE--";
+          serviceOptionsDiv.style.display = "none";
+          mask.style.display = "none";
+          this.service = null;
+        }
+      });
+      serviceOptionsDiv.appendChild(serviceOption);
     });
   }
 
   async generateOTP() {
     try {
-      const service = document.getElementById("service-select").value;
+      const service = this.service;
       const password = document.getElementById("password-input").value;
 
       if (!service || !password) throw new Error("Missing input");
@@ -128,8 +150,17 @@ class TOTPGenerator {
       this.displayOTP(service, otp);
       this.startWipeTimer();
     } catch (e) {
-      document.getElementById("otp-display").innerHTML =
-        "Invalid GRSA Encryption Key";
+      const serviceShow = document.getElementById("service-show");
+      const otpShow = document.getElementById("otp-show");
+      serviceShow.textContent = "Invalid GRSA";
+      otpShow.textContent = "Encryption Key";
+      setTimeout(() => {
+        serviceShow.textContent = "GENERATE CODE";
+        otpShow.textContent = "☢️ ☣️ ☢️ ☣️ ☢️";
+        const password = document.getElementById("password-input");
+        password.value = "";
+        password.focus();
+      }, 2500);
     }
   }
 
@@ -207,7 +238,6 @@ class TOTPGenerator {
           ((hmac[offset + 1] & 0xff) << 16) |
           ((hmac[offset + 2] & 0xff) << 8) |
           (hmac[offset + 3] & 0xff);
-
         // Generate 6-digit code
         return (binary % 1000000).toString().padStart(6, "0");
       });
@@ -233,7 +263,6 @@ class TOTPGenerator {
         bits -= 8;
       }
     }
-
     return new Uint8Array(bytes);
   }
 
@@ -246,18 +275,22 @@ class TOTPGenerator {
     // Clear any existing timer/code first
     this.clearCurrentOTP();
 
+    document.getElementById("service-show").innerText = service;
+    const otpShow = document.getElementById("otp-show");
+    otpShow.innerHTML = otp;
+    otpShow.classList.add("otp-style");
+    otpShow.addEventListener("click", () => {
+      copyNumericValue(otpShow);
+    });
+
     const display = document.getElementById("otp-display");
     display.innerHTML = `
-    <div class="result">
-      <div>${service}:&nbsp;</div>
-      <div class="otp-code" id="otp-code">${otp}</div>
-      <div>Valid for: <span id="countdown">30</span></div>
+    <div class="flex">
+      <div class="result">
+        <div><span id="countdown">30</span></div>
+      </div>
     </div>
     `;
-    const otpDisplay = document.getElementById("otp-display");
-    otpDisplay.addEventListener("click", () => {
-      copyNumericValue(otpDisplay);
-    });
 
     // Track current OTP
     this.currentOTP = otp;
@@ -281,15 +314,13 @@ class TOTPGenerator {
     }
     if (this.currentOTP) {
       // Securely wipe the OTP from memory
-      const otpElement = document.querySelector(".otp-code");
-      if (otpElement) otpElement.textContent = "••••••";
       this.currentOTP = null;
     }
   }
 
   displayError(message) {
     document.getElementById(
-      "otp-display"
+      "service-show"
     ).innerHTML = `<div class="error">${message}</div>`;
   }
 
@@ -303,7 +334,12 @@ class TOTPGenerator {
     // Zero out sensitive data
     this.activePassword = null;
     document.getElementById("password-input").value = "";
-    document.getElementById("otp-display").innerHTML = "";
+    document.getElementById("service-show").innerText = "GENERATE CODE";
+    const otpShow = document.getElementById("otp-show");
+    otpShow.innerText = "☢️ ☣️ ☢️ ☣️ ☢️";
+    otpShow.classList.remove("otp-style");
+    document.getElementById("select-service").innerHTML = "--Select Service--";
+    this.service = null;
 
     // Clear crypto operations from memory
     crypto.subtle.digest("SHA-256", new Uint8Array(1));
@@ -312,10 +348,9 @@ class TOTPGenerator {
 
   checkCryptoSupport() {
     if (!window.crypto?.subtle) {
-      document.getElementById("otp-display").innerHTML = `
-        <h1>🚨 Browser Incompatible</h1>
-        <p>Use Chrome/Firefox/Safari with HTTPS</p>
-      `;
+      document.getElementById("service-show").innerText =
+        "🚨 Browser Incompatible";
+      document.getElementById("otp-show").innerText = `HTTPS REQUIRED`;
       throw new Error("WebCrypto unavailable");
     }
   }
@@ -326,9 +361,11 @@ document.addEventListener("DOMContentLoaded", () => {
   if (document.querySelector("script[nonce]")?.nonce === "1IEbA2a5H") {
     new TOTPGenerator();
   } else {
-    document.getElementById("otp-display").innerHTML = `
-          <h1>🚨 Security Violation Detected</h1>
-          <p>Invalid Content Security Policy configuration</p>
-      `;
+    document.getElementById("service-show").innerText =
+      "🚨 Security Violation Detected";
+    document.getElementById(
+      "otp-show"
+    ).innerText = `Invalid Content Security Policy config`;
   }
 });
+
