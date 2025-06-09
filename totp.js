@@ -164,7 +164,7 @@ class TOTPGenerator {
         serviceShow.textContent = "GENERATE CODE";
         otpShow.textContent = "☢️ ☣️ ☢️ ☣️ ☢️";
         const password = document.getElementById("password-input");
-        password.value = "";
+        // password.value = "";
         password.focus();
       }, 2500);
     }
@@ -302,14 +302,25 @@ class TOTPGenerator {
     this.currentOTP = otp;
 
     // Start new countdown
-    let remaining = 30;
+    // Calculate milliseconds until next 30s boundary
+    const now = Date.now();
+    const secondsSinceEpoch = Math.floor(now / 1000);
+    const msUntilNextStep =
+      (30 - (secondsSinceEpoch % 30)) * 1000 - (now % 1000);
+
+    // Start first update after precise delay
+    setTimeout(() => {
+      this.clearCurrentOTP(); // Clear previous timer if any
+      this.generateOTP(); // Generate new OTP at exact time step
+    }, msUntilNextStep);
+
+    // Immediately start a countdown for UI
+    let remaining = Math.floor(msUntilNextStep / 1000);
+    document.getElementById("countdown").textContent = remaining;
+
     this.currentOTPTimer = setInterval(() => {
       remaining--;
       document.getElementById("countdown").textContent = remaining;
-      if (remaining <= 0) {
-        this.clearCurrentOTP();
-        this.generateOTP();
-      }
     }, 1000);
   }
 
