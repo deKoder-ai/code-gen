@@ -1,0 +1,125 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+  font-family: 'ARCADECLASSIC';
+}
+@font-face {
+  font-family: 'ARCADECLASSIC';
+  src: url('./ARCADECLASSIC.TTF');
+}
+button:hover {
+  cursor: pointer;
+}
+body {
+  background-color: #0c0c0c;
+  color: #00c42a;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+.page {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgb(16, 22, 19);
+  /* margin: 0px 20px; */
+}
+.container {
+  border-radius: 40px;
+  position: relative;
+  border: 3px solid #000000;
+  padding: 57px 71px;
+  font-size: 25px;
+  letter-spacing: 5px;
+  background-color: rgb(9, 12, 10);
+  text-align: center;
+  height: 750px;
+  width: 570px;
+  background-image: url(./panel-3.png);
+  background-size: contain;
+  background-position: top center;
+  /* background-position: -40px -160px; */
+  background-repeat: none;
+}
+.title-container {
+  background-color: rgba(0, 0, 0, 0.55);
+  border: 2px solid #000000;
+  margin: 0px 0px 20px 0px;
+  border-radius: 30px;
+  font-size: 20px;
+  line-height: 0.7;
+  padding: 17px 0px;
+}
+.container input,
+.container select,
+.container button {
+  border-radius: 15px;
+  font-size: 25px;
+  background-color: rgba(0, 0, 0, 0.55);
+  color: #00c42a;
+  border: 2px solid #000000;
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 2px;
+  text-align: center;
+}
+.container input::placeholder {
+  color: #00c42a;
+}
+.container input:focus,
+.container select:focus,
+.container button:focus {
+  outline: 3px solid #00c42a;
+}
+.container button:hover {
+  background-color: #00c42a;
+  color: black;
+}
+#otp-display {
+  border-radius: 40px;
+  font-size: 3rem;
+  margin-top: 20px;
+  /* min-height: 3rem; */
+  letter-spacing: 0.3rem;
+  color: #00c42a;
+}
+.result {
+  border-radius: 30px;
+  padding: 20px;
+  line-height: 1.2;
+  background-color: rgba(0, 0, 0, 0.932);
+  border: 2px solid #000000;
+}
+.otp-code {
+  color: rgb(0, 19, 187);
+}
+
+#wipe-btn {
+  color: #ff002b;
+  border: 2px solid #000000;
+  border-radius: 15px;
+}
+#wipe-btn:focus {
+  outline: 3px solid #ff002b;
+}
+#wipe-btn:hover {
+  background-color: #ff002b;
+  color: black;
+}
+
+
+@media only screen and (max-width: 650px) {
+  .page {
+    align-items: start;
+  }
+  .container {
+    width: 1100vw;
+    height: 100vh;
+    background-size: 100% 100%;
+    background-position: 0;
+    background-repeat: none;
+    overflow: hidden;
+  }
+}

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>-::codegen::-</title>
+  <!-- 🔒 -->
+  <link rel="icon" href="./lock.svg">
+  <link rel="stylesheet" href="style.css">
+  <script nonce="1IEbA2a5H" src="totp.js" type="module"></script>
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'">
+</head>
+<body>
+  <div class="page">
+    <div class="container">
+      <div class="title-container">
+        <h1>GENERATE CODE</h1>
+        <h2>☢️ ☢️ ☢️</h1>
+      </div>
+      <select id="service-select">
+        <option value="">--Select Account--</option>
+      </select>
+      <input type="password" id="password-input" placeholder="Decryption &nbsp;&nbsp;Password">
+      <button id="generate-btn">Generate</button>
+      <button id="wipe-btn" class="nuke">☠️ Nuke It ☠️</button>
+      <div id="otp-display"></div>
+    </div>
+  </div>
+  <script src="totp.js" type="module"></script>
+</body>
+</html>
