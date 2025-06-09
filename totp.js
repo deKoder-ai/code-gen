@@ -281,47 +281,77 @@ class TOTPGenerator {
     // Clear any existing timer/code first
     this.clearCurrentOTP();
 
-    document.getElementById("service-show").innerText = service;
     const otpShow = document.getElementById("otp-show");
+    const serviceShow = document.getElementById("service-show");
+    const display = document.getElementById("otp-display");
+
+    // Remove previous countdown bar if exists
+    const oldBar = document.querySelector(".countdown-bar");
+    if (oldBar) oldBar.remove();
+
+    // Inject OTP and service name
+    serviceShow.innerText = service;
     otpShow.innerHTML = otp;
     otpShow.classList.add("otp-style");
-    otpShow.addEventListener("click", () => {
-      copyNumericValue(otpShow);
-    });
+    otpShow.addEventListener("click", () => copyNumericValue(otpShow));
 
-    const display = document.getElementById("otp-display");
-    display.innerHTML = `
-    <div class="flex">
-      <div class="result">
-        <div><span id="countdown">30</span></div>
+    // Create and insert the countdown bar
+    const bar = document.createElement("div");
+    bar.className = "countdown-bar";
+    display.style.position = "relative"; // Ensure parent is positioned
+    display.appendChild(bar);
+
+    // Countdown text div
+    display.innerHTML += `
+      <div class="flex">
+        <div class="result">
+          <div><span id="countdown">30</span></div>
+        </div>
       </div>
-    </div>
     `;
 
     // Track current OTP
     this.currentOTP = otp;
 
-    // Start new countdown
-    // Calculate milliseconds until next 30s boundary
+    // Calculate exact next step
     const now = Date.now();
     const secondsSinceEpoch = Math.floor(now / 1000);
     const msUntilNextStep =
       (30 - (secondsSinceEpoch % 30)) * 1000 - (now % 1000);
 
-    // Start first update after precise delay
+    // Start at correct point
+    let startTime = now + msUntilNextStep;
+    let duration = 30000;
+
+    // Animate every 50ms for smoothness
+    const animate = () => {
+      const now = Date.now();
+      const elapsed = now - startTime;
+      const remaining = Math.max(0, duration - elapsed);
+      const progress = Math.min(1, elapsed / duration);
+
+      // Update visual bar height
+      bar.style.height = `${100 * (1 - progress)}%`;
+
+      // Update countdown number every full second
+      const secondsLeft = Math.ceil(remaining / 1000);
+      const countdownEl = document.getElementById("countdown");
+      if (countdownEl) countdownEl.textContent = secondsLeft;
+
+      if (elapsed < duration) {
+        this.currentAnimationFrame = requestAnimationFrame(animate);
+      } else {
+        this.clearCurrentOTP();
+        this.generateOTP();
+      }
+    };
+
+    // Start animation after delay
     setTimeout(() => {
-      this.clearCurrentOTP(); // Clear previous timer if any
-      this.generateOTP(); // Generate new OTP at exact time step
+      startTime = Date.now(); // Reset to actual start time
+      this.currentAnimationFrame = requestAnimationFrame(animate);
+      this.generateOTP(); // Trigger next code at end of cycle
     }, msUntilNextStep);
-
-    // Immediately start a countdown for UI
-    let remaining = Math.floor(msUntilNextStep / 1000);
-    document.getElementById("countdown").textContent = remaining;
-
-    this.currentOTPTimer = setInterval(() => {
-      remaining--;
-      document.getElementById("countdown").textContent = remaining;
-    }, 1000);
   }
 
   clearCurrentOTP() {
@@ -333,6 +363,8 @@ class TOTPGenerator {
       // Securely wipe the OTP from memory
       this.currentOTP = null;
     }
+    if (this.currentAnimationFrame)
+      cancelAnimationFrame(this.currentAnimationFrame);
   }
 
   displayError(message) {
