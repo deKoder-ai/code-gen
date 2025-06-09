@@ -313,6 +313,7 @@ class TOTPGenerator {
     // Track current OTP
     this.currentOTP = otp;
 
+<<<<<<< HEAD
     // Calculate exact next step
     const now = Date.now();
     const secondsSinceEpoch = Math.floor(now / 1000);
@@ -352,6 +353,18 @@ class TOTPGenerator {
       this.currentAnimationFrame = requestAnimationFrame(animate);
       this.generateOTP(); // Trigger next code at end of cycle
     }, msUntilNextStep);
+=======
+    // Start new countdown
+    let remaining = 30;
+    this.currentOTPTimer = setInterval(() => {
+      remaining--;
+      document.getElementById("countdown").textContent = remaining;
+      if (remaining <= 0) {
+        this.clearCurrentOTP();
+        this.generateOTP();
+      }
+    }, 1000);
+>>>>>>> parent of d7af0b5 (Fix time sync to clock round numbers)
   }
 
   clearCurrentOTP() {
