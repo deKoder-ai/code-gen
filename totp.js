@@ -51,6 +51,41 @@ const copyNumericValue = (element) => {
       console.error("Failed to copy:", err);
     });
 };
+const arrowKeys = () => {
+  document.addEventListener("keydown", function handleArrowNavigation(e) {
+    // Only proceed if the currently focused element is inside #service-options-div
+    const container = document.getElementById("service-options-div");
+    if (!container.contains(document.activeElement)) return;
+
+    // Only respond to up/down arrows
+    if (e.key !== "ArrowDown" && e.key !== "ArrowUp") return;
+
+    // Prevent page scroll
+    e.preventDefault();
+
+    // Get all focusable elements inside the container
+    const focusableElements = Array.from(
+      container.querySelectorAll(`
+        a[href], button, input, select, textarea,
+        [tabindex]:not([tabindex="-1"])
+      `)
+    ).filter((el) => !el.hasAttribute("disabled") && el.offsetParent !== null); // exclude hidden or disabled
+
+    const activeIndex = focusableElements.indexOf(document.activeElement);
+    let nextIndex;
+
+    if (e.key === "ArrowDown") {
+      nextIndex = (activeIndex + 1) % focusableElements.length;
+    } else if (e.key === "ArrowUp") {
+      nextIndex =
+        (activeIndex - 1 + focusableElements.length) % focusableElements.length;
+    }
+
+    if (focusableElements[nextIndex]) {
+      focusableElements[nextIndex].focus();
+    }
+  });
+};
 
 class TOTPGenerator {
   constructor() {
@@ -83,6 +118,16 @@ class TOTPGenerator {
       .addEventListener("click", () => this.wipeAll());
   }
 
+  arrowselect() {
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowDown") {
+        console.log("down");
+      } else if (e.key === "ArrowUp") {
+        console.log("up");
+      }
+    });
+  }
+
   injectCSPMeta() {
     const meta = document.createElement("meta");
     meta.httpEquiv = "Content-Security-Policy";
@@ -106,6 +151,7 @@ class TOTPGenerator {
 
     serviceSelect.addEventListener("click", () => {
       serviceOptionsDiv.style.display = "block";
+      document.getElementById("ss").focus();
       mask.style.display = "block";
     });
 
@@ -294,7 +340,7 @@ class TOTPGenerator {
     const display = document.getElementById("otp-display");
     display.innerHTML = `
     <div class="flex">
-      <div class="result">
+      <div class="result" id="countdown-container">
         <div><span id="countdown">30</span></div>
       </div>
     </div>
@@ -318,11 +364,31 @@ class TOTPGenerator {
 
     // Immediately start a countdown for UI
     let remaining = Math.floor(msUntilNextStep / 1000);
-    document.getElementById("countdown").textContent = remaining;
+    const countdownElement = document.getElementById("countdown");
+    const countdownContainer = document.getElementById("countdown-container");
+    countdownElement.textContent = remaining;
+    countdownContainer.classList.remove("cd-red");
+    countdownContainer.classList.add("cd-green");
 
     this.currentOTPTimer = setInterval(() => {
       remaining--;
-      document.getElementById("countdown").textContent = remaining;
+      countdownElement.textContent = remaining;
+      if (remaining < 10) {
+        countdownElement.classList.remove("yellow-text");
+        countdownElement.classList.add("red-text");
+        countdownContainer.classList.remove("cd-yellow");
+        countdownContainer.classList.add("cd-red");
+      } else if (remaining < 20) {
+        countdownElement.classList.remove("green-text");
+        countdownElement.classList.add("yellow-text");
+        countdownContainer.classList.remove("cd-green");
+        countdownContainer.classList.add("cd-yellow");
+      } else {
+        countdownElement.classList.remove("red-text");
+        countdownElement.classList.add("green-text");
+        countdownContainer.classList.remove("cd-red");
+        countdownContainer.classList.add("cd-green");
+      }
     }, 1000);
   }
 
@@ -360,7 +426,7 @@ class TOTPGenerator {
     document.getElementById("select-service").innerHTML = "--Select Service--";
     this.service = null;
     const display = document.getElementById("otp-display");
-    display.innerHTML = '';
+    display.innerHTML = "";
 
     // Clear crypto operations from memory
     crypto.subtle.digest("SHA-256", new Uint8Array(1));
@@ -380,7 +446,9 @@ class TOTPGenerator {
 // Initialize with CSP check
 document.addEventListener("DOMContentLoaded", () => {
   if (document.querySelector("script[nonce]")?.nonce === "1IEbA2a5H") {
+    document.getElementById("select-service").focus();
     new TOTPGenerator();
+    arrowKeys();
   } else {
     document.getElementById("service-show").innerText =
       "🚨 Security Violation Detected";

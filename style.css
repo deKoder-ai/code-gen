@@ -1,3 +1,4 @@
+/* style.css */
 *, *::before, *::after {
   box-sizing: border-box;
   font-family: 'ARCADECLASSIC';
@@ -24,6 +25,14 @@ body {
   align-items: center;
   background-color: rgb(16, 22, 19);
   /* margin: 0px 20px; */
+}
+.logo {
+  position: absolute;
+  right: 50%;
+  bottom: -17px;
+  transform: translateX(50%);
+  font-size: 1.1rem;
+  color: #7761007a;
 }
 .container {
   border-radius: 40px;
@@ -86,19 +95,66 @@ body {
 }
 .result {
   border-radius: 100px;
-  padding: 20px 20px 20px 25px;
   line-height: 1.2;
-  background-color: rgba(0, 0, 0, 0.932);
-  border: 2px solid #000000;
+  background-color: rgba(0, 0, 0, 0.863);
   width: 110px;
-  border: 4px solid #00c42ac0;
+  outline: 2px solid rgba(0, 0, 0, 0.781);
   margin-top: 20px;
+  margin-left: 10px;
+}
+#countdown {
+  text-shadow: 2px 2px 0 black, -2px -2px 0 black, 2px -2px 0 black, -2px 2px 0 black;
+}
+.cd-green {
+  border: 5px solid #00c42a;
+  padding: 20px 20px 20px 21px;
+  box-shadow: 3px 3px 7px #00c42a3f, 
+    -3px 3px 7px #00c42a3f, 
+    3px -3px 7px #00c42a3f,
+    -3px -3px 7px #00c42a3f,
+    3px 3px 7px #00c42a3f inset, 
+    -3px 3px 7px #00c42a3f inset, 
+    3px -3px 7px #00c42a3f inset,
+    -3px -3px 7px #00c42a3f inset;
+}
+.cd-yellow {
+  border: 5px solid #dfbe03;
+  padding: 20px 20px 20px 19px;
+  box-shadow: 3px 3px 7px #dfbe033f, 
+    -3px 3px 7px #dfbe033f, 
+    3px -3px 7px #dfbe033f,
+    -3px -3px 7px #dfbe033f,
+    5px 5px 8px #dfbe055f inset, 
+    -5px 5px 7px #dfbe055f inset, 
+    5px -5px 8px #dfbe055f inset,
+    -5px -5px 7px #dfbe055f inset;
+}
+.cd-red {
+  border: 5px solid #ff002b;
+  padding: 20px 20px 20px 25px;
+  box-shadow: 3px 3px 7px #ff002b3f, 
+    -3px 3px 7px #ff002b3f, 
+    3px -3px 7px #ff002b3f,
+    -3px -3px 7px #ff002b3f,
+    7px 7px 12px #ff002b7f inset, 
+    -7px 7px 12px #ff002b7f inset, 
+    7px -7px 12px #ff002b7f inset,
+    -7px -7px 12px #ff002b7f inset;
+}
+.green-text {
+  color: #00c42a;
+}
+.yellow-text {
+  color: #dfbe03;
+}
+.red-text {
+  color: #ff002b;
 }
 .otp-code {
-  color: rgb(0, 19, 187);
+  color: #dfbe03;
 }
 .otp-style {
-  color: rgb(0, 19, 187);
+  color: #dfbe03;
   font-size: 3rem;
   margin: 2px 0px 13px 0px;
 }
