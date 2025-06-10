@@ -164,7 +164,7 @@ class TOTPGenerator {
         serviceShow.textContent = "GENERATE CODE";
         otpShow.textContent = "☢️ ☣️ ☢️ ☣️ ☢️";
         const password = document.getElementById("password-input");
-        // password.value = "";
+        password.value = "";
         password.focus();
       }, 2500);
     }
