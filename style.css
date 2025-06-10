@@ -165,9 +165,9 @@ body {
   width: 100vw;
   height: 100vh;
   z-index: 1000;
-  background-color: rgba(0, 0, 0, 0.664);
+  background-color: rgba(0, 0, 0, 0.397);
+  transition: background-color 2s;
 }
-
 
 @media only screen and (max-width: 650px) {
   .page {

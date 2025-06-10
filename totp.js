@@ -286,7 +286,9 @@ class TOTPGenerator {
     otpShow.innerHTML = otp;
     otpShow.classList.add("otp-style");
     otpShow.addEventListener("click", () => {
-      copyNumericValue(otpShow);
+      if (this.currentOTP) {
+        copyNumericValue(otpShow);
+      }
     });
 
     const display = document.getElementById("otp-display");
@@ -357,6 +359,8 @@ class TOTPGenerator {
     otpShow.classList.remove("otp-style");
     document.getElementById("select-service").innerHTML = "--Select Service--";
     this.service = null;
+    const display = document.getElementById("otp-display");
+    display.innerHTML = '';
 
     // Clear crypto operations from memory
     crypto.subtle.digest("SHA-256", new Uint8Array(1));
