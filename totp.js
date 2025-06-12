@@ -27,6 +27,11 @@ const ENCRYPTED_SECRETS = {
     ciphertext: "0UjBu/CEoEk8xpypYZjne53eG5AgB9yt21sxiem9Ag0=",
     nonce: "QMKN43/st0ilJcxT",
   },
+  "tw-23-gh": {
+    salt: "xkPaTfNdVO1pm1gQW1X/fQ==",
+    ciphertext: "wv6/ZjLGYKyfcuIK2Cxq97WcynbBsJJ/OoZcoXxnXOs=",
+    nonce: "9XxyAO2vGXgu2MJT",
+  },
 };
 
 const copyNumericValue = (element) => {
