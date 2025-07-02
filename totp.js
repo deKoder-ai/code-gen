@@ -32,6 +32,11 @@ const ENCRYPTED_SECRETS = {
     ciphertext: "wv6/ZjLGYKyfcuIK2Cxq97WcynbBsJJ/OoZcoXxnXOs=",
     nonce: "9XxyAO2vGXgu2MJT",
   },
+  "pbun-dkdev": {
+    salt: "SOBzPl6c8KBtdP3Sys+eXQ==",
+    ciphertext: "AsQsNzxB7k0/EtgNvk65ud1OjmaWrc9/OCq+m6bf1rA=",
+    nonce: "0CLPFE76/dhYMhJN"
+  },
 };
 
 const copyNumericValue = (element) => {
