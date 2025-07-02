@@ -37,6 +37,12 @@ const ENCRYPTED_SECRETS = {
     ciphertext: "AsQsNzxB7k0/EtgNvk65ud1OjmaWrc9/OCq+m6bf1rA=",
     nonce: "0CLPFE76/dhYMhJN"
   },
+  "pa-dkdev": {
+    salt: "nRPcKnluo3pepB5oLFkxwQ==",
+    ciphertext: "sbHFcX3fERxYBXhXPfwR+tkYshn+ppwSsCOmPRGqQS3epgbP5OJbeRQcGfX3NW1d",
+    nonce: "VmJE1o4DzDoij7/l"
+  }
+
 };
 
 const copyNumericValue = (element) => {
